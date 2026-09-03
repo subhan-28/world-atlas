@@ -1,0 +1,126 @@
+<div class="detail-page">
+  <div class="page-header">
+    <a routerLink="/" class="brand-bar" aria-label="World Atlas home">
+      <svg viewBox="0 0 100 100" width="18" height="18" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="4"/>
+        <path d="M50 8 L58 46 L50 54 L42 46 Z" fill="currentColor"/>
+        <path d="M50 92 L58 54 L50 46 L42 54 Z" fill="currentColor" opacity="0.5"/>
+      </svg>
+      <span>World Atlas</span>
+    </a>
+    <button
+      type="button"
+      class="theme-toggle"
+      (click)="themeService.toggleTheme()"
+      [attr.aria-label]="themeService.isDark() ? 'Switch to light mode' : 'Switch to dark mode'">
+      <svg *ngIf="!themeService.isDark()" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <svg *ngIf="themeService.isDark()" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+
+  <svg class="compass" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1"/>
+    <path d="M50 8 L58 46 L50 54 L42 46 Z" fill="currentColor"/>
+    <path d="M50 92 L58 54 L50 46 L42 54 Z" fill="currentColor" opacity="0.4"/>
+    <path d="M8 50 L46 42 L54 50 L46 58 Z" fill="currentColor" opacity="0.25"/>
+    <path d="M92 50 L54 42 L46 50 L54 58 Z" fill="currentColor" opacity="0.25"/>
+  </svg>
+
+   <div class="loading-card" *ngIf="loading()" aria-live="polite" aria-label="Loading">
+    <div class="globe-loader"></div>
+    <p class="loading-text">Spinning the globe...</p>
+  </div>
+
+  <div class="detail-card" *ngIf="!loading()">
+    <p class="error-msg" *ngIf="errorMsg()">{{ errorMsg() }}</p>
+
+    <ng-container *ngIf="!errorMsg()">
+      <div class="detail-flag-frame" *ngIf="flagUrl()">
+        <img [src]="flagUrl()" alt="{{ countryName }} flag" class="flag-img">
+      </div>
+
+      <h1 class="country-name">{{ countryName }}</h1>
+
+      <div class="info-grid">
+        <div class="info-row">
+          <span class="info-label">Capital</span>
+          <span class="info-value">{{ capital() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Region</span>
+          <span class="info-value">{{ region() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Subregion</span>
+          <span class="info-value">{{ subregion() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Population</span>
+          <span class="info-value">{{ population() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Nationality</span>
+          <span class="info-value">{{ demonym() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Languages</span>
+          <span class="info-value">{{ languages() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Currency</span>
+          <span class="info-value">{{ currency() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Calling Code</span>
+          <span class="info-value">{{ callingCode() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Timezone</span>
+          <span class="info-value">{{ timezones() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Domain</span>
+          <span class="info-value">{{ topLevelDomain() }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Area</span>
+          <span class="info-value">{{ area() }}</span>
+        </div>
+      </div>
+
+      <div class="neighbours-section" *ngIf="loadingNeighbours()">
+        <span class="neighbours-label">Neighbouring Countries</span>
+        <div class="neighbours-row">
+          <div class="neighbour-skeleton shimmer" *ngFor="let n of [1,2,3]"></div>
+        </div>
+      </div>
+
+      <div class="neighbours-section" *ngIf="!loadingNeighbours() && neighboursChecked() && neighbours().length > 0">
+        <span class="neighbours-label">Neighbouring Countries</span>
+        <div class="neighbours-row">
+          <a *ngFor="let n of neighbours()" [routerLink]="['/details', n.name]" class="neighbour-chip">
+            <img [src]="n.flagUrl" alt="{{ n.name }} flag" class="neighbour-flag">
+            <span>{{ n.name }}</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="neighbours-section" *ngIf="!loadingNeighbours() && neighboursChecked() && neighbours().length === 0">
+        <span class="neighbours-label">Neighbouring Countries</span>
+        <p class="no-neighbours">No neighbouring countries — this is an island nation.</p>
+      </div>
+    </ng-container>
+
+    <a [routerLink]="['/flag', countryName]" class="back-btn">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path d="M19 12H6M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to flag
+    </a>
+  </div>
+</div>
