@@ -245,7 +245,6 @@ h1 em {
   font-size: 11px;
   letter-spacing: 0.08em;
   color: rgba(var(--text-rgb),0.4);
-  z-index: 1;
 }
 
 .page-header {
